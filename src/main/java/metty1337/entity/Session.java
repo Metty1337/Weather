@@ -1,9 +1,7 @@
 package metty1337.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,6 +10,7 @@ import java.util.UUID;
 @ToString
 @EqualsAndHashCode(of = {"user", "expiresAt"})
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "sessions", schema = "public")
 public class Session {
@@ -27,4 +26,9 @@ public class Session {
 
     @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
+
+    public Session(User user, Instant expiresAt) {
+        this.user = user;
+        this.expiresAt = expiresAt;
+    }
 }

@@ -9,6 +9,7 @@
     <url>https://maven.apache.org</url>
 
     <properties>
+        <java.version>25</java.version>
         <junit.version>3.8.1</junit.version>
         <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
         <spring-webmvc.version>7.0.1</spring-webmvc.version>
@@ -19,6 +20,13 @@
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
         <hibernate-core.version>7.2.0.Final</hibernate-core.version>
         <lombok.version>1.18.42</lombok.version>
+        <spring-data-jpa.version>4.0.1</spring-data-jpa.version>
+        <spring-context.version>7.0.2</spring-context.version>
+        <spring-orm.version>7.0.2</spring-orm.version>
+        <spring-tx.version>7.0.2</spring-tx.version>
+        <slf4j-api.version>2.0.17</slf4j-api.version>
+        <slf4j-simple.verion>2.0.17</slf4j-simple.verion>
+        <jackson-databind.version>3.0.3</jackson-databind.version>
     </properties>
 
     <dependencies>
@@ -59,6 +67,42 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring-data-jpa.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring-context.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring-orm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring-tx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.verion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-databind.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -83,6 +127,13 @@
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <release>${java.version}</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,19 +1,16 @@
 package metty1337.config;
 
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRegistration;
 import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class WebAppInitializer implements WebApplicationInitializer {
     @Override
     public void onStartup(ServletContext servletContext) {
         AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-        context.register(WebConfig.class);
+        context.register(AppConfig.class, WebConfig.class);
 
         DispatcherServlet servlet = new DispatcherServlet(context);
         ServletRegistration.Dynamic dynamic = servletContext.addServlet("dispatcher", servlet);

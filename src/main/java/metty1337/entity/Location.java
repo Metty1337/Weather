@@ -1,16 +1,14 @@
 package metty1337.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @ToString
 @EqualsAndHashCode(of = {"name", "latitude", "longitude"})
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "locations", schema = "public")
 public class Location {
@@ -31,4 +29,11 @@ public class Location {
 
     @Column(name = "longitude", nullable = false, precision = 9, scale = 6)
     private BigDecimal longitude;
+
+    public Location(String name, User user, BigDecimal latitude, BigDecimal longitude) {
+        this.name = name;
+        this.user = user;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }
