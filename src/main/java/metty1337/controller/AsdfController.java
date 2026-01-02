@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AsdfController {
     @GetMapping("/")
     public String display() {
+        
+
         return "index";
     }
 }
