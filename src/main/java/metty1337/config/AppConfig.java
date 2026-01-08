@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = "metty1337.service")
+@ComponentScan(basePackages = "metty1337")
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "metty1337.repository")
 @PropertySource("classpath:db/liquibase.properties")
