@@ -33,7 +33,7 @@
                     <input type="password" class="form-control" id="repeat-password" th:field="*{repeatPassword}" required/>
                 </div>
 
-                <input type="hidden" name="redirect_to" th:href="@{/index}"/>
+                <input type="hidden" name="redirect_to" th:value="@{/index}"/>
 
                 <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
                 <p class="mt-2 text-center">Already have an account? <a th:href="@{/auth/signin}">Sign in here</a></p>

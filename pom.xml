@@ -28,7 +28,7 @@
         <spring-orm.version>7.0.2</spring-orm.version>
         <spring-tx.version>7.0.2</spring-tx.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
-        <slf4j-simple.verion>2.0.17</slf4j-simple.verion>
+        <logback-classic.version>1.5.24</logback-classic.version>
         <jackson-databind.version>3.0.3</jackson-databind.version>
         <thymeleaf.version>3.1.3.RELEASE</thymeleaf.version>
         <thymeleaf-spring6.version>3.1.3.RELEASE</thymeleaf-spring6.version>
@@ -104,10 +104,9 @@
             <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j-simple.verion}</version>
-            <scope>runtime</scope>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback-classic.version}</version>
         </dependency>
         <dependency>
             <groupId>tools.jackson.core</groupId>

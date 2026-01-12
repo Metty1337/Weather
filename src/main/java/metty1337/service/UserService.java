@@ -3,30 +3,34 @@ package metty1337.service;
 import lombok.RequiredArgsConstructor;
 import metty1337.dto.SignUpFormDto;
 import metty1337.entity.User;
-import metty1337.mapper.UserMapper;
+import metty1337.exception.AuthenticationFailedException;
+import metty1337.exception.ExceptionMessages;
 import metty1337.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+
+    @Transactional(readOnly = true)
+    public Optional<User> findByLogin(String login) {
+        return userRepository.findByLogin(login);
+    }
+
     @Transactional
-    public void createUser(SignUpFormDto signUpFormDto) {
-        userRepository.save(
-                new User(signUpFormDto.getUsername(),
-                        passwordEncoder.encode(signUpFormDto.getPassword()))
-        );
+    public User createUser(SignUpFormDto signUpFormDto) {
+        return userRepository.save(new User(signUpFormDto.getUsername(), passwordEncoder.encode(signUpFormDto.getPassword())));
     }
 
     @Transactional(readOnly = true)
-    public User findByLogin(String login) {
-        return userRepository.findByLogin(login);
+    public Optional<User> findById(long id) {
+        return userRepository.findById(id);
     }
 }

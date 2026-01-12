@@ -17,17 +17,39 @@
 
     <h2 class="text-center mb-5">Sign In</h2>
 
+<!--    <div class="row justify-content-center">-->
+<!--        <div class="col-12 col-lg-4 col-md-6 col-sm-12">-->
+<!--            <div class="alert alert-danger" role="alert">-->
+<!--                Invalid username or password.-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
     <div class="row justify-content-center">
         <div class="col-12 col-lg-4 col-md-6 col-sm-12">
             <form th:action="@{/auth/signin}" th:object="${signInFormDto}" method="post" class="mt-4">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" th:field="*{username}" required/>
+
+                    <div class="input-group has-validation">
+                        <input type="text"
+                               id="username"
+                               th:field="*{username}"
+                               class="form-control"
+                               th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"/>
+                        <div class="invalid-feedback" th:errors="*{username}">
+                        </div>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" th:field="*{password}" required/>
-                </div>
+                    <input type="password"
+                           id="password"
+                           th:field="*{password}"
+                           class="form-control"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"/>
+                    <div class="invalid-feedback" th:errors="*{password}">
+                    </div>                </div>
 
                 <input type="hidden" name="redirect_to" th:value="@{/index}"/>
 

@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -21,6 +22,7 @@ import java.util.Properties;
 
 @Configuration
 @ComponentScan(basePackages = "metty1337")
+@EnableScheduling
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "metty1337.repository")
 @PropertySource("classpath:db/liquibase.properties")
