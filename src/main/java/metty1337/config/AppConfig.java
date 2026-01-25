@@ -2,10 +2,7 @@ package metty1337.config;
 
 import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -25,38 +22,9 @@ import java.util.Properties;
 @EnableScheduling
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "metty1337.repository")
-@PropertySource("classpath:db/liquibase.properties")
+@PropertySource("classpath:session/session.properties")
 @RequiredArgsConstructor
 public class AppConfig {
-    private final Environment environment;
-
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(environment.getRequiredProperty("driver"));
-        dataSource.setUrl(environment.getRequiredProperty("url"));
-        dataSource.setUsername(environment.getRequiredProperty("username"));
-        dataSource.setPassword(environment.getRequiredProperty("password"));
-        return dataSource;
-    }
-
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource());
-        em.setPackagesToScan("metty1337.entity");
-
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        jpaProperties.put("hibernate.show_sql", true);
-        jpaProperties.put("hibernate.hbm2ddl.auto", "update");
-        em.setJpaProperties(jpaProperties);
-
-        return em;
-    }
 
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {

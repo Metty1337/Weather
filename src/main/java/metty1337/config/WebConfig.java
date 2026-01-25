@@ -24,7 +24,6 @@ import org.thymeleaf.templatemode.TemplateMode;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final SessionService sessionService;
-    private final UserService userService;
 
     @Bean
     public SpringResourceTemplateResolver templateResolver() {

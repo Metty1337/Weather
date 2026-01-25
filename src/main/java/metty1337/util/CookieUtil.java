@@ -24,8 +24,8 @@ public class CookieUtil {
         return "";
     }
 
-    public static @NonNull ResponseCookie getCookie(String token, Duration duration) {
-        return ResponseCookie.from("AUTH_TOKEN", token)
+    public static @NonNull ResponseCookie getCookie(String token, String cookieName, Duration duration) {
+        return ResponseCookie.from(cookieName, token)
                              .httpOnly(true)
                              .secure(false)
                              .path("/")
@@ -34,7 +34,7 @@ public class CookieUtil {
                              .build();
     }
 
-    public static @NonNull ResponseCookie getEmptyCookie() {
-        return getCookie("", Duration.ZERO);
+    public static @NonNull ResponseCookie getEmptyCookie(String cookieName) {
+        return getCookie("", cookieName, Duration.ZERO);
     }
 }
