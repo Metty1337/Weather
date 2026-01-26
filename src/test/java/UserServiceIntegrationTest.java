@@ -6,6 +6,7 @@ import metty1337.entity.Session;
 import metty1337.entity.User;
 import metty1337.exception.UserAlreadyExistException;
 import metty1337.job.SessionCleanupJob;
+import metty1337.repository.LocationRepository;
 import metty1337.repository.SessionRepository;
 import metty1337.repository.UserRepository;
 import metty1337.service.SessionService;
@@ -33,10 +34,13 @@ public class UserServiceIntegrationTest {
     private UserRepository userRepository;
     @Autowired
     private SessionRepository sessionRepository;
+    @Autowired
+    private LocationRepository locationRepository;
 
 
     @BeforeEach
     public void setUp() {
+        locationRepository.deleteAll();
         sessionRepository.deleteAll();
         userRepository.deleteAll();
     }
@@ -62,6 +66,7 @@ public class UserServiceIntegrationTest {
         Assertions.assertThrows(UserAlreadyExistException.class, () -> userService.createUser(signUpFormDto));
     }
 
+    //TODO move test to another class
     @Test
     public void shouldDeleteSessionAfterExpired() {
         SignUpFormDto signUpFormDto = new SignUpFormDto("Alex", "12345678", "12345678");

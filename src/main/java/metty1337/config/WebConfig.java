@@ -3,11 +3,13 @@ package metty1337.config;
 import lombok.RequiredArgsConstructor;
 import metty1337.interceptor.AuthTokenInterceptor;
 import metty1337.service.SessionService;
-import metty1337.service.UserService;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -24,6 +26,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
     private final SessionService sessionService;
+    private static final String OPEN_WEATHER_BASE_URL = "https://api.openweathermap.org";
 
     @Bean
     public SpringResourceTemplateResolver templateResolver() {
@@ -64,5 +67,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new AuthTokenInterceptor(sessionService))
                 .addPathPatterns("/**")
                 .excludePathPatterns("/static/**");
+    }
+
+    @Bean
+    public RestClient restClient() {
+        return RestClient.builder()
+                         .baseUrl(OPEN_WEATHER_BASE_URL)
+                         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                         .build();
     }
 }
