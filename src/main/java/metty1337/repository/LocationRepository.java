@@ -5,5 +5,6 @@ import metty1337.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    Location findByUser(User user);
+
+  Location findByUser(User user);
 }

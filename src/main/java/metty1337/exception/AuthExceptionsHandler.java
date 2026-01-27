@@ -10,34 +10,38 @@ import org.springframework.web.servlet.ModelAndView;
 
 @ControllerAdvice
 public class AuthExceptionsHandler {
-    private static final String SIGN_UP_FORM_DTO = "signUpFormDto";
-    private static final String SIGN_UP_WITH_ERRORS = "sign-up-with-errors";
-    private static final String SIGN_IN_WITH_ERRORS = "sign-in-with-errors";
-    private static final String SIGN_IN_FORM_DTO = "signInFormDto";
 
-    @ExceptionHandler(UserAlreadyExistException.class)
-    public ModelAndView handleUserAlreadyExistsException(UserAlreadyExistException ex) {
-        ModelAndView modelAndView = new ModelAndView(SIGN_UP_WITH_ERRORS);
-        BindingResult bindingResult = new BeanPropertyBindingResult(new SignUpFormDto(), SIGN_UP_FORM_DTO);
-        bindingResult.reject(ex.getClass()
-                               .getSimpleName(), ExceptionMessages.USER_ALREADY_EXIST_EXCEPTION.getMessage());
+  private static final String SIGN_UP_FORM_DTO = "signUpFormDto";
+  private static final String SIGN_UP_WITH_ERRORS = "sign-up-with-errors";
+  private static final String SIGN_IN_WITH_ERRORS = "sign-in-with-errors";
+  private static final String SIGN_IN_FORM_DTO = "signInFormDto";
 
-        modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + SIGN_UP_FORM_DTO, bindingResult);
-        modelAndView.addObject(SIGN_UP_FORM_DTO, new SignUpFormDto());
+  @ExceptionHandler(UserAlreadyExistException.class)
+  public ModelAndView handleUserAlreadyExistsException(UserAlreadyExistException ex) {
+    ModelAndView modelAndView = new ModelAndView(SIGN_UP_WITH_ERRORS);
+    BindingResult bindingResult =
+        new BeanPropertyBindingResult(new SignUpFormDto(), SIGN_UP_FORM_DTO);
+    bindingResult.reject(
+        ex.getClass().getSimpleName(), ExceptionMessages.USER_ALREADY_EXIST_EXCEPTION.getMessage());
 
-        return modelAndView;
-    }
+    modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + SIGN_UP_FORM_DTO, bindingResult);
+    modelAndView.addObject(SIGN_UP_FORM_DTO, new SignUpFormDto());
 
-    @ExceptionHandler(AuthenticationFailedException.class)
-    public ModelAndView handleAuthenticationFailedException(AuthenticationFailedException ex) {
-        ModelAndView modelAndView = new ModelAndView(SIGN_IN_WITH_ERRORS);
-        BindingResult bindingResult = new BeanPropertyBindingResult(new SignInFormDto(), SIGN_IN_FORM_DTO);
-        bindingResult.reject(ex.getClass()
-                               .getSimpleName(), ExceptionMessages.AUTHENTICATION_FAILED_EXCEPTION.getMessage());
+    return modelAndView;
+  }
 
-        modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + SIGN_IN_FORM_DTO, bindingResult);
-        modelAndView.addObject(SIGN_IN_FORM_DTO, new SignInFormDto());
+  @ExceptionHandler(AuthenticationFailedException.class)
+  public ModelAndView handleAuthenticationFailedException(AuthenticationFailedException ex) {
+    ModelAndView modelAndView = new ModelAndView(SIGN_IN_WITH_ERRORS);
+    BindingResult bindingResult =
+        new BeanPropertyBindingResult(new SignInFormDto(), SIGN_IN_FORM_DTO);
+    bindingResult.reject(
+        ex.getClass().getSimpleName(),
+        ExceptionMessages.AUTHENTICATION_FAILED_EXCEPTION.getMessage());
 
-        return modelAndView;
-    }
+    modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + SIGN_IN_FORM_DTO, bindingResult);
+    modelAndView.addObject(SIGN_IN_FORM_DTO, new SignInFormDto());
+
+    return modelAndView;
+  }
 }
