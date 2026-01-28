@@ -12,7 +12,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class AuthTokenInterceptor implements HandlerInterceptor {
 
-  public static final String AUTH_USER_ID_ATTR = "AUTH_USER_ID";
+  private static final String AUTH_USER_ID_ATTR = "AUTH_USER_ID";
   private static final String AUTH_TOKEN_ATTR = "AUTH_TOKEN";
   private final SessionService sessionService;
 

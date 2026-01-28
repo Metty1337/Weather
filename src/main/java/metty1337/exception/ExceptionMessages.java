@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExceptionMessages {
   AUTHENTICATION_FAILED_EXCEPTION("Authentication failed."),
-  USER_ALREADY_EXIST_EXCEPTION("User already exist.");
+  USER_ALREADY_EXIST_EXCEPTION("User already exist."),
+  USER_DOES_NOT_EXIST_EXCEPTION("User does not exist.");
 
   private final String message;
 }

@@ -70,7 +70,6 @@ public class AuthController {
     return "sign-in";
   }
 
-  //TODO
   @PostMapping("/signin")
   public String signIn(
       @Valid @ModelAttribute("signInFormDto") SignInFormDto signInFormDto,
