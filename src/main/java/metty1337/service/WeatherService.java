@@ -22,7 +22,13 @@ public class WeatherService {
         ExceptionMessages.USER_DOES_NOT_EXIST_EXCEPTION.getMessage())));
     List<Location> locations = locationService.findAllByUser(user);
 
-    return locations.stream().map(openWeatherService::getWeatherByCoords)
+    return locations.stream()
+        .map(location ->
+            openWeatherService.getWeatherByCoords(
+                location.getLatitude(),
+                location.getLongitude()
+            )
+        )
         .toList();
   }
 }
