@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -31,6 +32,7 @@ public class DevConfig {
   }
 
   @Bean
+  @DependsOn("liquibase")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
     em.setDataSource(dataSource());
@@ -42,7 +44,7 @@ public class DevConfig {
     Properties jpaProperties = new Properties();
     jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
     jpaProperties.put("hibernate.show_sql", true);
-    jpaProperties.put("hibernate.hbm2ddl.auto", "update");
+    jpaProperties.put("hibernate.hbm2ddl.auto", "validate");
     em.setJpaProperties(jpaProperties);
 
     return em;

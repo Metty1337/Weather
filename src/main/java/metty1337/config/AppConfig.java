@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "metty1337.repository")
-@Import(PropertiesConfig.class)
+@Import({PropertiesConfig.class, LiquibaseConfig.class})
 @RequiredArgsConstructor
 public class AppConfig {
 

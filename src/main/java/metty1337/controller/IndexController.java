@@ -24,6 +24,9 @@ public class IndexController {
   private static final String LOCATIONS_ATTR = "locationDtos";
   private static final String WEATHER_ATTR = "weatherDtos";
   private static final String SEARCH_FORM_ATTR = "searchFormDto";
+  private static final String LOCATION_DTO_ATTR = "locationDto";
+  private static final String INDEX_PAGE = "index";
+  private static final String SEARCH_RESULTS_PAGE = "search-results";
   private final WeatherService weatherService;
   private final LocationService locationService;
 
@@ -35,7 +38,7 @@ public class IndexController {
       weatherDtos = weatherService.getWeather(userId.get());
     }
     request.setAttribute(WEATHER_ATTR, weatherDtos);
-    return "index";
+    return INDEX_PAGE;
   }
 
   @PostMapping("/search")
@@ -43,7 +46,14 @@ public class IndexController {
       HttpServletRequest request) {
     List<LocationDto> locationDtos = locationService.getLocations(searchFormDto);
     request.setAttribute(LOCATIONS_ATTR, locationDtos);
-    return "search-results";
+    return SEARCH_RESULTS_PAGE;
+  }
+
+  @PostMapping("/add")
+  public String addLocation(@ModelAttribute(LOCATION_DTO_ATTR) LocationDto locationDto, HttpServletRequest request) {
+    Long userId = (Long) request.getAttribute(AUTH_USER_ID_ATTR);
+    locationService.addLocation(locationDto, userId);
+    return "redirect:/index";
   }
 
   @ModelAttribute(SEARCH_FORM_ATTR)

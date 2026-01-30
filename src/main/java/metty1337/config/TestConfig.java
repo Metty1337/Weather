@@ -42,7 +42,7 @@ public class TestConfig {
     Properties jpaProperties = new Properties();
     jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
     jpaProperties.put("hibernate.show_sql", false);
-    jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
+    jpaProperties.put("hibernate.hbm2ddl.auto", "none");
     em.setJpaProperties(jpaProperties);
 
     return em;
