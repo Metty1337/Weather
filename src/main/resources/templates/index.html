@@ -74,13 +74,18 @@
       <div class="col-12 col-lg-3 col-md-6 mb-4" th:each="w : ${weatherDtos}">
         <div class="card h-100 position-relative weather-card">
 
-          <div class="position-absolute weather-card-delete-form">
-            <form th:action="@{/weather/delete}" method="post" class="m-0">
-              <input type="hidden" name="name" th:value="${w.name}">
-              <input type="hidden" name="country" th:value="${w.country}">
+          <div class="position-absolute weather-card-delete-form"
+               th:if="${currentUser.present}">
+            <form th:action="@{/delete}"
+                  method="post"
+                  class="m-0">
+              <input type="hidden" name="latitude"  th:value="${w.latitude}">
+              <input type="hidden" name="longitude" th:value="${w.longitude}">
               <button type="submit" class="btn-close" aria-label="Delete"></button>
             </form>
           </div>
+
+
 
           <img class="card-img-top img-fluid"
                th:src="@{https://openweathermap.org/img/wn/{icon}@4x.png(icon=${w.icon})}"

@@ -24,7 +24,7 @@ public class WeatherService {
     List<Location> locations = locationService.findAllByUser(user);
 
     List<WeatherDto> weatherDtos = getWeatherDtos(locations);
-    setOriginalNameForWeather(locations, weatherDtos);
+    setOriginalNameAndCoordsForWeather(locations, weatherDtos);
     return weatherDtos;
   }
 
@@ -39,11 +39,14 @@ public class WeatherService {
         .toList();
   }
 
-  private static void setOriginalNameForWeather(List<Location> locations, List<WeatherDto> weatherDtos) {
+  private static void setOriginalNameAndCoordsForWeather(List<Location> locations,
+      List<WeatherDto> weatherDtos) {
     for (int i = 0; i < locations.size(); i++) {
       WeatherDto weatherDto = weatherDtos.get(i);
       Location location = locations.get(i);
       weatherDto.setName(location.getName());
+      weatherDto.setLatitude(String.valueOf(location.getLatitude()));
+      weatherDto.setLongitude(String.valueOf(location.getLongitude()));
     }
   }
 }

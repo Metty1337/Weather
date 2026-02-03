@@ -1,5 +1,6 @@
 package metty1337.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import metty1337.dto.LocationDto;
@@ -8,8 +9,8 @@ import metty1337.entity.Location;
 import metty1337.entity.User;
 import metty1337.exception.ExceptionMessages;
 import metty1337.exception.LocationAlreadyAddedException;
-import metty1337.exception.UserDoesNotExistException;
 import metty1337.exception.UserDoesNotAuthorizedException;
+import metty1337.exception.UserDoesNotExistException;
 import metty1337.mapper.LocationMapper;
 import metty1337.repository.LocationRepository;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -54,5 +55,11 @@ public class LocationService {
       throw new LocationAlreadyAddedException(
           ExceptionMessages.LOCATION_ALREADY_ADDED_EXCEPTION.getMessage(), e);
     }
+  }
+
+  @Transactional
+  public void deleteLocation(String latitude, String longitude, Long userId) {
+    locationRepository.deleteByLatitudeAndLongitudeAndUserId(new BigDecimal(latitude),
+        new BigDecimal(longitude), userId);
   }
 }
