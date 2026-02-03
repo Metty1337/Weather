@@ -68,16 +68,8 @@
       <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
 
-
-    <div th:if="${locationDto != null}" th:object="${locationDto}">
-      <div class="alert alert-danger"
-           th:if="${#fields.hasGlobalErrors()}"
-           role="alert">
-        <div th:each="err : ${#fields.globalErrors()}"
-             th:text="${err}">
-          Error text
-        </div>
-      </div>
+    <div class="alert alert-danger mt-3" th:if="${addLocationError}">
+      <span th:text="${addLocationError}">Already added</span>
     </div>
 
     <div>
@@ -106,11 +98,11 @@
                       th:action="@{/add}"
                       method="post"
                       class="m-0">
-                  <input type="hidden" name="name"      th:value="${loc.name}">
-                  <input type="hidden" name="latitude"  th:value="${loc.latitude}">
+                  <input type="hidden" name="name" th:value="${loc.name}">
+                  <input type="hidden" name="latitude" th:value="${loc.latitude}">
                   <input type="hidden" name="longitude" th:value="${loc.longitude}">
-                  <input type="hidden" name="country"   th:value="${loc.country}">
-                  <input type="hidden" name="state"     th:value="${loc.state}">
+                  <input type="hidden" name="country" th:value="${loc.country}">
+                  <input type="hidden" name="state" th:value="${loc.state}">
 
                   <button type="submit" class="btn btn-primary w-100">Add</button>
                 </form>
