@@ -17,8 +17,11 @@ public class SessionService {
 
   @Transactional(readOnly = true)
   public Optional<Session> findByToken(String token) {
-    UUID sessionId = UUID.fromString(token);
-    return sessionRepository.findById(sessionId);
+    try {
+      return sessionRepository.findById(UUID.fromString(token));
+    } catch (IllegalArgumentException e) {
+      return Optional.empty();
+    }
   }
 
   @Transactional

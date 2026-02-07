@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import metty1337.dto.LocationDto;
 import metty1337.dto.SearchFormDto;
 import metty1337.entity.Location;
-import metty1337.entity.User;
 import metty1337.exception.ExceptionMessages;
 import metty1337.exception.LocationAlreadyAddedException;
 import metty1337.exception.UserDoesNotAuthorizedException;
@@ -27,8 +26,8 @@ public class LocationService {
   private final UserService userService;
 
   @Transactional(readOnly = true)
-  public List<Location> findAllByUser(User user) {
-    return locationRepository.findAllByUser(user);
+  public List<Location> findAllByUser(Long userId) {
+    return locationRepository.findAllByUserId(userId);
   }
 
   public List<LocationDto> getLocations(SearchFormDto searchFormDto) {

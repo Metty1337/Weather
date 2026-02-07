@@ -33,7 +33,6 @@ public class IndexController {
   private static final String SEARCH_FORM_ATTR = "searchFormDto";
   private static final String INDEX_PAGE = "index";
   private static final String SEARCH_RESULTS_PAGE = "search-results";
-  private static final String WEATHER_DTO_ATTR = "weatherDto";
   private final WeatherService weatherService;
   private final LocationService locationService;
   private final String SESSION_LAST_SEARCH_FORM_DTO_ATTR = "lastSearchFormDto";
@@ -107,7 +106,8 @@ public class IndexController {
   }
 
   @PostMapping("/delete")
-  public String deleteLocation(@RequestParam("latitude") String latitude, @RequestParam("longitude") String longitude,
+  public String deleteLocation(@RequestParam("latitude") String latitude,
+      @RequestParam("longitude") String longitude,
       HttpServletRequest request) {
     Long userId = (Long) request.getAttribute(AUTH_USER_ID_ATTR);
     locationService.deleteLocation(latitude, longitude, userId);
