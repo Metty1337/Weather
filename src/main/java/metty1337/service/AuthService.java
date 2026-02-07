@@ -1,4 +1,4 @@
-package metty1337.service.implemenations;
+package metty1337.service;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -7,23 +7,20 @@ import metty1337.entity.Session;
 import metty1337.entity.User;
 import metty1337.exception.AuthenticationFailedException;
 import metty1337.exception.ExceptionMessages;
-import metty1337.service.interfaces.SessionService;
-import metty1337.service.interfaces.UserService;
-import metty1337.service.interfaces.AuthService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class AuthService {
 
   private final String SESSION_EXPIRATION;
   private final PasswordEncoder passwordEncoder;
   private final SessionService sessionService;
   private final UserService userService;
 
-  public AuthServiceImpl(@Value("${durationInMin}") String SESSION_EXPIRATION,
+  public AuthService(@Value("${durationInMin}") String SESSION_EXPIRATION,
       PasswordEncoder passwordEncoder, SessionService sessionService, UserService userService) {
     this.SESSION_EXPIRATION = SESSION_EXPIRATION;
     this.passwordEncoder = passwordEncoder;
@@ -32,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Transactional
-  @Override
   public String authenticate(SignInFormDto signInFormDto) {
     User user = userService.findByLogin(signInFormDto.getUsername())
         .orElseThrow(() -> new AuthenticationFailedException(
