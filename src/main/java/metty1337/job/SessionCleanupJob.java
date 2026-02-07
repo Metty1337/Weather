@@ -2,7 +2,7 @@ package metty1337.job;
 
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
-import metty1337.service.interfaces.SessionService;
+import metty1337.service.SessionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

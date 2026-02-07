@@ -9,7 +9,7 @@ import metty1337.config.AppConfig;
 import metty1337.config.TestConfig;
 import metty1337.exception.WeatherClientException;
 import metty1337.exception.WeatherServerException;
-import metty1337.service.interfaces.OpenWeatherService;
+import metty1337.service.OpenWeatherService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
