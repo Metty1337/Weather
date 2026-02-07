@@ -13,6 +13,8 @@ import metty1337.dto.WeatherDto;
 import metty1337.exception.LocationAlreadyAddedException;
 import metty1337.service.LocationService;
 import metty1337.service.WeatherService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,10 +35,12 @@ public class IndexController {
   private static final String SEARCH_FORM_ATTR = "searchFormDto";
   private static final String INDEX_PAGE = "index";
   private static final String SEARCH_RESULTS_PAGE = "search-results";
+  private static final Logger log = LoggerFactory.getLogger(IndexController.class);
   private final WeatherService weatherService;
   private final LocationService locationService;
   private final String SESSION_LAST_SEARCH_FORM_DTO_ATTR = "lastSearchFormDto";
   private final String SESSION_LAST_SEARCH_RESULTS_ATTR = "lastLocationDtos";
+
 
   @GetMapping("/index")
   public String indexPage(HttpServletRequest request) {
@@ -52,13 +56,16 @@ public class IndexController {
   @PostMapping("/search")
   public String search(@Valid @ModelAttribute(SEARCH_FORM_ATTR) SearchFormDto searchFormDto,
       BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpSession session) {
+    log.debug("Attempting to search for {}", searchFormDto);
     if (bindingResult.hasErrors()) {
+      log.warn("Search form validation failed, searchFormDto={}", searchFormDto);
       redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + SEARCH_FORM_ATTR,
           bindingResult);
       redirectAttributes.addFlashAttribute(SEARCH_FORM_ATTR, searchFormDto);
       return "redirect:/search-results";
     }
     List<LocationDto> result = locationService.getLocations(searchFormDto);
+    log.info("Found {} locations", result.size());
     session.setAttribute(SESSION_LAST_SEARCH_FORM_DTO_ATTR, searchFormDto);
     session.setAttribute(SESSION_LAST_SEARCH_RESULTS_ATTR, result);
 
@@ -89,14 +96,17 @@ public class IndexController {
   @PostMapping("/add")
   public String addLocation(@ModelAttribute(LOCATION_DTO_ATTR) LocationDto locationDto,
       HttpServletRequest request, RedirectAttributes redirectAttributes) {
+    log.debug("Attempting to add location {}", locationDto);
     Long userId = (Long) request.getAttribute(AUTH_USER_ID_ATTR);
 
     try {
       locationService.addLocation(locationDto, userId);
     } catch (LocationAlreadyAddedException e) {
       redirectAttributes.addFlashAttribute("addLocationError", e.getMessage());
+      log.warn("Location already added, locationDto={}", locationDto);
       return "redirect:/search-results";
     }
+    log.info("Successfully added location {}", locationDto);
     return "redirect:/index";
   }
 
@@ -109,8 +119,10 @@ public class IndexController {
   public String deleteLocation(@RequestParam("latitude") String latitude,
       @RequestParam("longitude") String longitude,
       HttpServletRequest request) {
+    log.debug("Attempting to delete location {}", latitude);
     Long userId = (Long) request.getAttribute(AUTH_USER_ID_ATTR);
     locationService.deleteLocation(latitude, longitude, userId);
+    log.info("Successfully deleted location {}", latitude);
     return "redirect:/index";
   }
 }
