@@ -42,7 +42,7 @@ public class IndexController {
   private final String SESSION_LAST_SEARCH_RESULTS_ATTR = "lastLocationDtos";
 
 
-  @GetMapping("/index")
+  @GetMapping({"/index", "/"})
   public String indexPage(HttpServletRequest request) {
     Optional<Long> userId = Optional.ofNullable((Long) request.getAttribute(AUTH_USER_ID_ATTR));
     List<WeatherDto> weatherDtos = new ArrayList<>();
