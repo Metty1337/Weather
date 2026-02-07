@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import metty1337.dto.UserDto;
 import metty1337.entity.User;
 import metty1337.mapper.UserMapper;
-import metty1337.service.UserService;
+import metty1337.service.interfaces.UserService;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 

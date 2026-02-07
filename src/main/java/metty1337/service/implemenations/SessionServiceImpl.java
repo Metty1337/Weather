@@ -1,4 +1,4 @@
-package metty1337.service;
+package metty1337.service.implemenations;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -6,16 +6,18 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import metty1337.entity.Session;
 import metty1337.repository.SessionRepository;
+import metty1337.service.interfaces.SessionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SessionService {
+public class SessionServiceImpl implements SessionService {
 
   private final SessionRepository sessionRepository;
 
   @Transactional(readOnly = true)
+  @Override
   public Optional<Session> findByToken(String token) {
     try {
       return sessionRepository.findById(UUID.fromString(token));
@@ -25,11 +27,13 @@ public class SessionService {
   }
 
   @Transactional
+  @Override
   public void createSession(Session session) {
     sessionRepository.save(session);
   }
 
   @Transactional
+  @Override
   public void logout(String token) {
     if (token == null || token.isBlank()) {
       return;
@@ -38,6 +42,7 @@ public class SessionService {
   }
 
   @Transactional
+  @Override
   public long deleteAllByExpiresAtBefore(Instant now) {
     return sessionRepository.deleteAllByExpiresAtBefore(now);
   }

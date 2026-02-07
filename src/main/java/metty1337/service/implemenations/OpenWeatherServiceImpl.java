@@ -1,4 +1,4 @@
-package metty1337.service;
+package metty1337.service.implemenations;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -7,6 +7,7 @@ import metty1337.dto.WeatherDto;
 import metty1337.exception.ExceptionMessages;
 import metty1337.exception.WeatherClientException;
 import metty1337.exception.WeatherServerException;
+import metty1337.service.interfaces.OpenWeatherService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatusCode;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class OpenWeatherService {
+public class OpenWeatherServiceImpl implements OpenWeatherService {
 
   private static final String FIND_WEATHER_REQUEST_URI = "/data/2.5/weather";
   private static final String FIND_LOCATIONS_REQUEST_URI = "/geo/1.0/direct";
@@ -29,11 +30,12 @@ public class OpenWeatherService {
   private final RestClient restClient;
   private final String apiKey;
 
-  public OpenWeatherService(RestClient restClient, @Value("${api_key}") String apiKey) {
+  public OpenWeatherServiceImpl(RestClient restClient, @Value("${api_key}") String apiKey) {
     this.restClient = restClient;
     this.apiKey = apiKey;
   }
 
+  @Override
   public WeatherDto getWeatherByCoords(BigDecimal latitude, BigDecimal longitude) {
     return restClient
         .get()
@@ -64,6 +66,7 @@ public class OpenWeatherService {
         .body(WeatherDto.class);
   }
 
+  @Override
   public List<LocationDto> getLocationsByName(String name) {
     return restClient
         .get()

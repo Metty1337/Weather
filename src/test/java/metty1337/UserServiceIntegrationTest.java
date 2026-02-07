@@ -8,7 +8,8 @@ import metty1337.exception.UserAlreadyExistException;
 import metty1337.repository.LocationRepository;
 import metty1337.repository.SessionRepository;
 import metty1337.repository.UserRepository;
-import metty1337.service.UserService;
+import metty1337.service.interfaces.UserService;
+import metty1337.service.implemenations.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ public class UserServiceIntegrationTest {
     SignUpFormDto signUpFormDto = new SignUpFormDto("Alex", "12345678", "12345678");
     String username = signUpFormDto.getUsername();
 
-    UserService userService = webApplicationContext.getBean(UserService.class);
+    UserService userService = webApplicationContext.getBean(UserServiceImpl.class);
     userService.createUser(signUpFormDto);
 
     Assertions.assertTrue(userService.findByLogin(username).isPresent());
@@ -60,7 +61,7 @@ public class UserServiceIntegrationTest {
   @Test
   public void shouldThrowExceptionWhenUserAlreadyExists() {
     SignUpFormDto signUpFormDto = new SignUpFormDto("Alex", "12345678", "12345678");
-    UserService userService = webApplicationContext.getBean(UserService.class);
+    UserService userService = webApplicationContext.getBean(UserServiceImpl.class);
     userService.createUser(signUpFormDto);
 
     Assertions.assertThrows(

@@ -2,16 +2,12 @@ package metty1337.config;
 
 import lombok.RequiredArgsConstructor;
 import metty1337.interceptor.AuthTokenInterceptor;
-import metty1337.service.SessionService;
+import metty1337.service.implemenations.SessionServiceImpl;
 import org.jspecify.annotations.NonNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -28,7 +24,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-  private final SessionService sessionService;
+  private final SessionServiceImpl sessionService;
 
   @Bean
   public SpringResourceTemplateResolver templateResolver() {

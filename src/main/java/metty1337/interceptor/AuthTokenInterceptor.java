@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
-import metty1337.service.SessionService;
+import metty1337.service.interfaces.SessionService;
 import metty1337.util.CookieUtil;
 import org.jspecify.annotations.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
