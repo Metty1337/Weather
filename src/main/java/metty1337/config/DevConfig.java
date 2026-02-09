@@ -33,9 +33,9 @@ public class DevConfig {
 
   @Bean
   @DependsOn("liquibase")
-  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
     LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-    em.setDataSource(dataSource());
+    em.setDataSource(dataSource);
     em.setPackagesToScan("metty1337.entity");
 
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

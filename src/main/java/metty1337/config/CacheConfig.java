@@ -15,17 +15,11 @@ import org.springframework.context.annotation.Configuration;
 public class CacheConfig {
 
   @Bean
-  public CacheManager cacheManager(
-      Caffeine<Object, Object> caffeine) {
+  public CacheManager cacheManager() {
     CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-    caffeineCacheManager.setCaffeine(caffeine);
-    return caffeineCacheManager;
-  }
-
-  @Bean
-  public Caffeine<Object, Object> caffeine() {
-    return Caffeine.newBuilder()
+    caffeineCacheManager.setCaffeine(Caffeine.newBuilder()
         .expireAfterWrite(3, TimeUnit.MINUTES)
-        .maximumSize(1000);
+        .maximumSize(1000));
+    return caffeineCacheManager;
   }
 }
