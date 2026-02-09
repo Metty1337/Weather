@@ -2,7 +2,6 @@ package metty1337.config;
 
 import lombok.RequiredArgsConstructor;
 import metty1337.interceptor.AuthTokenInterceptor;
-import metty1337.service.SessionService;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,7 +23,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-  private final SessionService sessionService;
+  private final AuthTokenInterceptor authTokenInterceptor;
 
   @Bean
   public SpringResourceTemplateResolver templateResolver() {
@@ -62,7 +61,7 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(@NonNull InterceptorRegistry registry) {
-    registry.addInterceptor(new AuthTokenInterceptor(sessionService))
+    registry.addInterceptor(authTokenInterceptor)
         .addPathPatterns("/**")
         .excludePathPatterns("/static/**");
   }

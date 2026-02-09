@@ -7,8 +7,10 @@ import lombok.RequiredArgsConstructor;
 import metty1337.service.SessionService;
 import metty1337.util.CookieUtil;
 import org.jspecify.annotations.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+@Component
 @RequiredArgsConstructor
 public class AuthTokenInterceptor implements HandlerInterceptor {
 
