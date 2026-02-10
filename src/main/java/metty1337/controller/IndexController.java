@@ -38,8 +38,8 @@ public class IndexController {
   private static final Logger log = LoggerFactory.getLogger(IndexController.class);
   private final WeatherService weatherService;
   private final LocationService locationService;
-  private final String SESSION_LAST_SEARCH_FORM_DTO_ATTR = "lastSearchFormDto";
-  private final String SESSION_LAST_SEARCH_RESULTS_ATTR = "lastLocationDtos";
+  private static final String SESSION_LAST_SEARCH_ATTR = "lastSearchFormDto";
+  private static final String SESSION_LAST_RESULTS_ATTR = "lastLocationDtos";
 
 
   @GetMapping({"/index", "/"})
@@ -67,8 +67,8 @@ public class IndexController {
     }
     List<LocationDto> result = locationService.getLocations(searchFormDto);
     log.info("Found {} locations", result.size());
-    session.setAttribute(SESSION_LAST_SEARCH_FORM_DTO_ATTR, searchFormDto);
-    session.setAttribute(SESSION_LAST_SEARCH_RESULTS_ATTR, result);
+    session.setAttribute(SESSION_LAST_SEARCH_ATTR, searchFormDto);
+    session.setAttribute(SESSION_LAST_RESULTS_ATTR, result);
 
     redirectAttributes.addFlashAttribute(SEARCH_FORM_ATTR, searchFormDto);
     redirectAttributes.addFlashAttribute(LOCATIONS_DTO_ATTR, result);
@@ -79,7 +79,7 @@ public class IndexController {
   public String searchResultPage(Model model, HttpSession session) {
     if (!model.containsAttribute(SEARCH_FORM_ATTR)) {
       SearchFormDto lastSearchFormDto = (SearchFormDto) session.getAttribute(
-          SESSION_LAST_SEARCH_FORM_DTO_ATTR);
+          SESSION_LAST_SEARCH_ATTR);
       model.addAttribute(SEARCH_FORM_ATTR,
           lastSearchFormDto != null ? lastSearchFormDto : new SearchFormDto());
     }
@@ -87,7 +87,7 @@ public class IndexController {
     if (!model.containsAttribute(LOCATIONS_DTO_ATTR)) {
       @SuppressWarnings("unchecked")
       List<LocationDto> lastLocationDtos = (List<LocationDto>) session.getAttribute(
-          SESSION_LAST_SEARCH_RESULTS_ATTR);
+          SESSION_LAST_RESULTS_ATTR);
       model.addAttribute(LOCATIONS_DTO_ATTR,
           lastLocationDtos != null ? lastLocationDtos : List.of());
     }
