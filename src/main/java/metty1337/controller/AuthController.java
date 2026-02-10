@@ -32,17 +32,19 @@ public class AuthController {
   private static final Logger log = LoggerFactory.getLogger(AuthController.class);
   private static final String SIGN_UP_FORM_DTO_ATTR = "signUpFormDto";
   private static final String SIGN_IN_FORM_DTO_ATTR = "signInFormDto";
-  private final long TIME_TO_COOKIE_LIVE;
+
+  @Value("${durationInMin}")
+  private final long cookieDurationMinutes;
   private final AuthService authService;
   private final SessionService sessionService;
   private final UserService userService;
 
   public AuthController(
-      @Value("${durationInMin}") long TIME_TO_COOKIE_LIVE,
+      @Value("${durationInMin}") long cookieDurationMinutes,
       AuthService authService,
       SessionService sessionService,
       UserService userService) {
-    this.TIME_TO_COOKIE_LIVE = TIME_TO_COOKIE_LIVE;
+    this.cookieDurationMinutes = cookieDurationMinutes;
     this.authService = authService;
     this.sessionService = sessionService;
     this.userService = userService;
@@ -108,7 +110,7 @@ public class AuthController {
     }
     String token = authService.authenticate(signInFormDto);
 
-    Duration duration = Duration.ofMinutes(TIME_TO_COOKIE_LIVE);
+    Duration duration = Duration.ofMinutes(cookieDurationMinutes);
     ResponseCookie cookie = CookieUtil.getCookie(token, Constants.AUTH_TOKEN_COOKIE_NAME, duration);
     response.setHeader("Set-Cookie", cookie.toString());
     log.info("User logged in, username={}", signInFormDto.getUsername());
