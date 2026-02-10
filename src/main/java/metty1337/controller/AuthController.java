@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.time.Duration;
+import metty1337.constants.Constants;
 import metty1337.dto.SignInFormDto;
 import metty1337.dto.SignUpFormDto;
 import metty1337.entity.User;
@@ -29,7 +30,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AuthController {
 
   private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-  private static final String AUTH_TOKEN_COOKIE_NAME = "AUTH_TOKEN";
   private static final String SIGN_UP_FORM_DTO_ATTR = "signUpFormDto";
   private static final String SIGN_IN_FORM_DTO_ATTR = "signInFormDto";
   private final long TIME_TO_COOKIE_LIVE;
@@ -109,7 +109,7 @@ public class AuthController {
     String token = authService.authenticate(signInFormDto);
 
     Duration duration = Duration.ofMinutes(TIME_TO_COOKIE_LIVE);
-    ResponseCookie cookie = CookieUtil.getCookie(token, AUTH_TOKEN_COOKIE_NAME, duration);
+    ResponseCookie cookie = CookieUtil.getCookie(token, Constants.AUTH_TOKEN_COOKIE_NAME, duration);
     response.setHeader("Set-Cookie", cookie.toString());
     log.info("User logged in, username={}", signInFormDto.getUsername());
 
@@ -126,10 +126,11 @@ public class AuthController {
 
   @PostMapping("/logout")
   public String logout(HttpServletRequest request, HttpServletResponse response) {
-    String token = CookieUtil.readCookie(request, AUTH_TOKEN_COOKIE_NAME);
+    String token = CookieUtil.readCookie(request, Constants.AUTH_TOKEN_COOKIE_NAME);
     sessionService.logout(token);
 
-    response.setHeader("Set-Cookie", CookieUtil.getEmptyCookie(AUTH_TOKEN_COOKIE_NAME).toString());
+    response.setHeader("Set-Cookie",
+        CookieUtil.getEmptyCookie(Constants.AUTH_TOKEN_COOKIE_NAME).toString());
     return "redirect:/auth/signin";
   }
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import metty1337.constants.Constants;
 import metty1337.dto.LocationDto;
 import metty1337.dto.SearchFormDto;
 import metty1337.dto.WeatherDto;
@@ -28,7 +29,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class IndexController {
 
-  private static final String AUTH_USER_ID_ATTR = "AUTH_USER_ID";
   private static final String LOCATIONS_DTO_ATTR = "locationDtos";
   private static final String LOCATION_DTO_ATTR = "locationDto";
   private static final String WEATHER_ATTR = "weatherDtos";
@@ -44,7 +44,8 @@ public class IndexController {
 
   @GetMapping({"/index", "/"})
   public String indexPage(HttpServletRequest request) {
-    Optional<Long> userId = Optional.ofNullable((Long) request.getAttribute(AUTH_USER_ID_ATTR));
+    Optional<Long> userId = Optional.ofNullable(
+        (Long) request.getAttribute(Constants.AUTH_USER_ID_ATTR));
     List<WeatherDto> weatherDtos = new ArrayList<>();
     if (userId.isPresent()) {
       weatherDtos = weatherService.getWeather(userId.get());
@@ -97,7 +98,7 @@ public class IndexController {
   public String addLocation(@ModelAttribute(LOCATION_DTO_ATTR) LocationDto locationDto,
       HttpServletRequest request, RedirectAttributes redirectAttributes) {
     log.debug("Attempting to add location {}", locationDto);
-    Long userId = (Long) request.getAttribute(AUTH_USER_ID_ATTR);
+    Long userId = (Long) request.getAttribute(Constants.AUTH_USER_ID_ATTR);
 
     try {
       locationService.addLocation(locationDto, userId);
@@ -120,7 +121,7 @@ public class IndexController {
       @RequestParam("longitude") String longitude,
       HttpServletRequest request) {
     log.debug("Attempting to delete location {}", latitude);
-    Long userId = (Long) request.getAttribute(AUTH_USER_ID_ATTR);
+    Long userId = (Long) request.getAttribute(Constants.AUTH_USER_ID_ATTR);
     locationService.deleteLocation(latitude, longitude, userId);
     log.info("Successfully deleted location {}", latitude);
     return "redirect:/index";
