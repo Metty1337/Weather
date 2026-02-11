@@ -1,5 +1,7 @@
 package metty1337.config;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import metty1337.interceptor.AuthTokenInterceptor;
 import org.jspecify.annotations.NonNull;
@@ -64,5 +66,10 @@ public class WebConfig implements WebMvcConfigurer {
     registry.addInterceptor(authTokenInterceptor)
         .addPathPatterns("/**")
         .excludePathPatterns("/static/**");
+  }
+
+  @Bean
+  public ExecutorService weatherApiExecutor() {
+    return Executors.newFixedThreadPool(10);
   }
 }
