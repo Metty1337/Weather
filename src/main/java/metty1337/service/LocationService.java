@@ -13,6 +13,7 @@ import metty1337.exception.UserDoesNotExistException;
 import metty1337.mapper.LocationMapper;
 import metty1337.repository.LocationRepository;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class LocationService {
   }
 
   @Transactional
-  @CacheEvict(cacheNames = "weather", key = "#userId")
+  @CachePut(cacheNames = "weather", key = "#userId")
   public void addLocation(LocationDto locationDto, Long userId) {
     if (userId == null) {
       throw new UserDoesNotAuthorizedException(
