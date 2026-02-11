@@ -15,14 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
-  private final String SESSION_EXPIRATION;
+  private final String sessionExpiration;
   private final PasswordEncoder passwordEncoder;
   private final SessionService sessionService;
   private final UserService userService;
 
-  public AuthService(@Value("${durationInMin}") String SESSION_EXPIRATION,
+  public AuthService(@Value("${durationInMin}") String sessionExpiration,
       PasswordEncoder passwordEncoder, SessionService sessionService, UserService userService) {
-    this.SESSION_EXPIRATION = SESSION_EXPIRATION;
+    this.sessionExpiration = sessionExpiration;
     this.passwordEncoder = passwordEncoder;
     this.sessionService = sessionService;
     this.userService = userService;
@@ -39,7 +39,7 @@ public class AuthService {
     }
 
     Instant now = Instant.now();
-    Duration sessionExpiration = Duration.ofMinutes(Long.parseLong(SESSION_EXPIRATION));
+    Duration sessionExpiration = Duration.ofMinutes(Long.parseLong(this.sessionExpiration));
     Session session = new Session(user, now.plus(sessionExpiration));
     sessionService.createSession(session);
     return session.getId()

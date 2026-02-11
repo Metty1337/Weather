@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString
-@EqualsAndHashCode(of = {"user", "expiresAt"})
+@EqualsAndHashCode(of = {"id"})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
