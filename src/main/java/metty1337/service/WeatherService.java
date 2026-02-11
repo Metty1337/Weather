@@ -18,29 +18,26 @@ public class WeatherService {
     List<Location> locations = locationService.findAllByUser(userId);
 
     List<WeatherDto> weatherDtos = getWeatherDtos(locations);
-    setOriginalNameAndCoordsForWeather(locations, weatherDtos);
-    return weatherDtos;
+    return setOriginalNameAndCoordsForWeather(locations, weatherDtos);
   }
 
   private @NonNull List<WeatherDto> getWeatherDtos(List<Location> locations) {
-    return locations.stream()
-        .map(location ->
-            openWeatherService.getWeatherByCoords(
-                location.getLatitude(),
-                location.getLongitude()
-            )
-        )
-        .toList();
+    return locations.stream().map(
+        location -> openWeatherService.getWeatherByCoords(location.getLatitude(),
+            location.getLongitude())).toList();
   }
 
-  private static void setOriginalNameAndCoordsForWeather(List<Location> locations,
+  private static List<WeatherDto> setOriginalNameAndCoordsForWeather(List<Location> locations,
       List<WeatherDto> weatherDtos) {
+    List<WeatherDto> newWeatherDtos = List.copyOf(weatherDtos);
+
     for (int i = 0; i < locations.size(); i++) {
-      WeatherDto weatherDto = weatherDtos.get(i);
+      WeatherDto weatherDto = newWeatherDtos.get(i);
       Location location = locations.get(i);
       weatherDto.setName(location.getName());
       weatherDto.setLatitude(String.valueOf(location.getLatitude()));
       weatherDto.setLongitude(String.valueOf(location.getLongitude()));
     }
+    return newWeatherDtos;
   }
 }
