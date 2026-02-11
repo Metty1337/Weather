@@ -10,16 +10,8 @@ public class PasswordMatchesValidator
   @Override
   public boolean isValid(
       SignUpFormDto signUpFormDto, ConstraintValidatorContext constraintValidatorContext) {
-    if (signUpFormDto == null) {
-      return true;
-    }
-
     String password = signUpFormDto.getPassword();
     String repeatPassword = signUpFormDto.getRepeatPassword();
-
-    if (password == null || repeatPassword == null) {
-      return true;
-    }
 
     boolean matches = password.equals(repeatPassword);
     if (!matches) {

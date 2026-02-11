@@ -48,18 +48,4 @@ public class WeatherService {
         String.valueOf(location.getLatitude()),
         String.valueOf(location.getLongitude()));
   }
-
-//  private static List<WeatherDto> getOriginalNameAndCoordsForWeather(List<Location> locations,
-//      List<WeatherDto> weatherDtos) {
-//    List<WeatherDto> newWeatherDtos = List.copyOf(weatherDtos);
-//
-//    for (int i = 0; i < locations.size(); i++) {
-//      WeatherDto weatherDto = newWeatherDtos.get(i);
-//      Location location = locations.get(i);
-//      weatherDto.setName(location.getName());
-//      weatherDto.setLatitude(String.valueOf(location.getLatitude()));
-//      weatherDto.setLongitude(String.valueOf(location.getLongitude()));
-//    }
-//    return newWeatherDtos;
-//  }
 }
