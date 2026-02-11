@@ -26,6 +26,7 @@ public class SessionService {
 
   @Transactional
   public void createSession(Session session) {
+    sessionRepository.deleteAllByUser(session.getUser());
     sessionRepository.save(session);
   }
 
