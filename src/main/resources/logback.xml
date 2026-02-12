@@ -38,7 +38,10 @@
 
     <logger name="metty1337" level="DEBUG"/>
 
-    <root level="INFO">
+  <logger name="org.springframework.cache" level="TRACE"/>
+  <logger name="org.springframework.cache.interceptor" level="TRACE"/>
+
+  <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
