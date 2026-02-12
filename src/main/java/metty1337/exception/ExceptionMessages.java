@@ -12,6 +12,7 @@ public enum ExceptionMessages {
   USER_DOES_NOT_AUTHORIZED_EXCEPTION("User does not authorized."),
   LOCATION_ALREADY_ADDED_EXCEPTION("Location already added."),
   WEATHER_CLIENT_EXCEPTION("Weather API client error:"),
-  WEATHER_SERVER_EXCEPTION("Weather API server error:");
+  WEATHER_SERVER_EXCEPTION("Weather API server error:"),
+  TOO_MANY_REQUEST_EXCEPTION("Too many requests.");
   private final String message;
 }

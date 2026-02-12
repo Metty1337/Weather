@@ -27,7 +27,13 @@ import org.springframework.web.client.RestClient;
 @EnableScheduling
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "metty1337.repository")
-@Import({PropertiesConfig.class, LiquibaseConfig.class, CacheConfig.class})
+@Import({
+    PropertiesConfig.class,
+    LiquibaseConfig.class,
+    CacheConfig.class,
+    ResilienceConfig.class,
+    WeatherExecutorConfig.class
+})
 @RequiredArgsConstructor
 public class AppConfig {
 

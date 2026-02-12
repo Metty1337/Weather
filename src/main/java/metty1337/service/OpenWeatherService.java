@@ -1,10 +1,13 @@
 package metty1337.service;
 
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import java.math.BigDecimal;
 import java.util.List;
 import metty1337.dto.LocationDto;
 import metty1337.dto.WeatherDto;
 import metty1337.exception.ExceptionMessages;
+import metty1337.exception.TooManyRequestException;
 import metty1337.exception.WeatherClientException;
 import metty1337.exception.WeatherServerException;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +37,7 @@ public class OpenWeatherService {
     this.apiKey = apiKey;
   }
 
+  @RateLimiter(name = "openweather", fallbackMethod = "rateLimitFallback")
   public WeatherDto getWeatherByCoords(BigDecimal latitude, BigDecimal longitude) {
     return restClient
         .get()
@@ -64,6 +68,7 @@ public class OpenWeatherService {
         .body(WeatherDto.class);
   }
 
+  @RateLimiter(name = "openweather", fallbackMethod = "rateLimitFallback")
   public List<LocationDto> getLocationsByName(String name) {
     return restClient
         .get()
@@ -93,4 +98,27 @@ public class OpenWeatherService {
         .body(new ParameterizedTypeReference<>() {
         });
   }
+
+  private WeatherDto rateLimitFallback(BigDecimal latitude, BigDecimal longitude, Throwable t) {
+    if (t instanceof RequestNotPermitted) {
+      throw new TooManyRequestException(
+          ExceptionMessages.TOO_MANY_REQUEST_EXCEPTION.getMessage(), t);
+    }
+    if (t instanceof RuntimeException re) {
+      throw re;
+    }
+    throw new RuntimeException(t);
+  }
+
+  private List<LocationDto> rateLimitFallback(String name, Throwable t) {
+    if (t instanceof RequestNotPermitted) {
+      throw new TooManyRequestException(
+          ExceptionMessages.TOO_MANY_REQUEST_EXCEPTION.getMessage(), t);
+    }
+    if (t instanceof RuntimeException re) {
+      throw re;
+    }
+    throw new RuntimeException(t);
+  }
+
 }
