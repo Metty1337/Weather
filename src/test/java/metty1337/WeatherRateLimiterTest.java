@@ -3,14 +3,17 @@ package metty1337;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import io.github.resilience4j.ratelimiter.RateLimiterConfig;
+import io.github.resilience4j.ratelimiter.RateLimiterRegistry;
 import java.math.BigDecimal;
+import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import metty1337.config.AppConfig;
 import metty1337.config.TestConfig;
-import metty1337.exception.WeatherClientException;
-import metty1337.exception.WeatherServerException;
+import metty1337.exception.TooManyRequestException;
 import metty1337.service.OpenWeatherService;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +31,14 @@ import org.springframework.web.client.RestClient;
 @SpringJUnitConfig(classes = {
     AppConfig.class,
     TestConfig.class,
-    OpenWeatherServiceIntegrationTest.WireMockTestConfig.class,
+    WeatherRateLimiterTest.RateLimiterTestConfig.class,
+    WeatherRateLimiterTest.WireMockTestConfig.class,
 })
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
     "api_key=test-api-key"
 })
-public class OpenWeatherServiceIntegrationTest {
+public class WeatherRateLimiterTest {
 
   private static final String LATITUDE_PARAM = "lat";
   private static final String FIND_WEATHER_REQUEST_URI = "/data/2.5/weather";
@@ -312,16 +316,7 @@ public class OpenWeatherServiceIntegrationTest {
           }
       ]
       """;
-  private static final String ERROR_401_RESPONSE = """
-      {
-        "message": "Invalid api key"
-      }
-      """;
-  private static final String ERROR_503_RESPONSE = """
-      {
-        "message": "Server unavailable"
-      }
-      """;
+
   private static final String LONDON_JSON_RESPONSE = """
       {
           "coord": {
@@ -369,8 +364,6 @@ public class OpenWeatherServiceIntegrationTest {
           "cod": 200
       }
       """;
-  private static final int STATUS_503 = 503;
-  private static final int STATUS_401 = 401;
 
   @RegisterExtension
   static WireMockExtension wireMockExtension = WireMockExtension.newInstance()
@@ -380,157 +373,69 @@ public class OpenWeatherServiceIntegrationTest {
   @Autowired
   private OpenWeatherService openWeatherService;
 
+  @Autowired
+  private RateLimiterRegistry rateLimiterRegistry;
+
+  @BeforeEach
+  void resetRateLimiter() {
+    rateLimiterRegistry.remove("openweather");
+  }
+
   @Test
-  void getWeatherByCoords_callsExternalApi_withApiKey() {
+  void getWeatherByCoords_whenRateLimitExceeded_usesFallback() {
     wireMockExtension.stubFor(WireMock.get(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI))
         .withQueryParam(LATITUDE_PARAM, WireMock.equalTo(LONDON_LATITUDE))
         .withQueryParam(LONGITUDE_PARAM, WireMock.equalTo(LONDON_LONGITUDE))
         .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
         .withQueryParam(UNITS_PARAM, WireMock.equalTo(METRIC_SYSTEM))
-        .willReturn(WireMock.okJson(LONDON_JSON_RESPONSE
-        )));
+        .willReturn(WireMock.okJson(LONDON_JSON_RESPONSE)));
 
-    openWeatherService.getWeatherByCoords(new BigDecimal(LONDON_LATITUDE),
-        new BigDecimal(LONDON_LONGITUDE));
+    BigDecimal lat = new BigDecimal(LONDON_LATITUDE);
+    BigDecimal lon = new BigDecimal(LONDON_LONGITUDE);
 
-    wireMockExtension.verify(
-        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI))
-            .withQueryParam(LATITUDE_PARAM, WireMock.equalTo(LONDON_LATITUDE))
-            .withQueryParam(LONGITUDE_PARAM, WireMock.equalTo(LONDON_LONGITUDE))
-            .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-            .withQueryParam(UNITS_PARAM, WireMock.equalTo(METRIC_SYSTEM)));
+    openWeatherService.getWeatherByCoords(lat, lon);
+    openWeatherService.getWeatherByCoords(lat, lon);
+
+    Assertions.assertThrows(TooManyRequestException.class,
+        () -> openWeatherService.getWeatherByCoords(lat, lon));
+
+    wireMockExtension.verify(2,
+        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI)));
   }
 
   @Test
-  void getLocationByName_callsExternalApi_withApiKey() {
+  void getLocationsByName_whenRateLimitExceeded_usesDefault() {
     wireMockExtension.stubFor(WireMock.get(WireMock.urlPathEqualTo(FIND_LOCATIONS_REQUEST_URI))
         .withQueryParam(NAME_PARAM, WireMock.equalTo(LONDON_NAME))
         .withQueryParam(LIMIT_ATTR, WireMock.equalTo(String.valueOf(MAX_OF_POSSIBLE_LOCATIONS)))
         .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
         .willReturn(WireMock.okJson(LONDON_LIST_RESPONSE)));
+
+    openWeatherService.getLocationsByName(LONDON_NAME);
     openWeatherService.getLocationsByName(LONDON_NAME);
 
-    wireMockExtension.verify(
-        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_LOCATIONS_REQUEST_URI))
-            .withQueryParam(NAME_PARAM, WireMock.equalTo(LONDON_NAME))
-            .withQueryParam(LIMIT_ATTR, WireMock.equalTo(String.valueOf(MAX_OF_POSSIBLE_LOCATIONS)))
-            .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-    );
-  }
-
-  @Test
-  void getWeatherByCoords_when4xx_throwsWeatherClientException() {
-    wireMockExtension.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI))
-            .withQueryParam(LATITUDE_PARAM, WireMock.equalTo(LONDON_LATITUDE))
-            .withQueryParam(LONGITUDE_PARAM, WireMock.equalTo(LONDON_LONGITUDE))
-            .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-            .withQueryParam(UNITS_PARAM, WireMock.equalTo(METRIC_SYSTEM))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(STATUS_401)
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(ERROR_401_RESPONSE)));
-
-    Assertions.assertThrows(
-        WeatherClientException.class,
-        () -> openWeatherService.getWeatherByCoords(
-            new BigDecimal(LONDON_LATITUDE),
-            new BigDecimal(LONDON_LONGITUDE)));
-
-    wireMockExtension.verify(
-        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI)));
-  }
-
-  @Test
-  void getWeatherByCoords_when5xx_throwsWeatherServerException() {
-    wireMockExtension.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI))
-            .withQueryParam(LATITUDE_PARAM, WireMock.equalTo(LONDON_LATITUDE))
-            .withQueryParam(LONGITUDE_PARAM, WireMock.equalTo(LONDON_LONGITUDE))
-            .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-            .withQueryParam(UNITS_PARAM, WireMock.equalTo(METRIC_SYSTEM))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(STATUS_503)
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(ERROR_503_RESPONSE)));
-
-    Assertions.assertThrows(
-        WeatherServerException.class,
-        () -> openWeatherService.getWeatherByCoords(
-            new BigDecimal(LONDON_LATITUDE),
-            new BigDecimal(LONDON_LONGITUDE)));
-
-    wireMockExtension.verify(
-        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI))
-    );
-  }
-
-  @Test
-  void getLocationsByName_when4xx_throwsWeatherClientException() {
-    wireMockExtension.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo(FIND_LOCATIONS_REQUEST_URI))
-            .withQueryParam(NAME_PARAM, WireMock.equalTo(LONDON_NAME))
-            .withQueryParam(LIMIT_ATTR, WireMock.equalTo(String.valueOf(MAX_OF_POSSIBLE_LOCATIONS)))
-            .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(STATUS_401)
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(ERROR_401_RESPONSE)));
-
-    Assertions.assertThrows(WeatherClientException.class,
+    Assertions.assertThrows(TooManyRequestException.class,
         () -> openWeatherService.getLocationsByName(LONDON_NAME));
 
-    wireMockExtension.verify(
+    wireMockExtension.verify(2,
         WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_LOCATIONS_REQUEST_URI)));
   }
 
-  @Test
-  void getLocationsByName_when5xx_throwsWeatherServerException() {
+  static class RateLimiterTestConfig {
 
-    wireMockExtension.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo(FIND_LOCATIONS_REQUEST_URI))
-            .withQueryParam(NAME_PARAM, WireMock.equalTo(LONDON_NAME))
-            .withQueryParam(LIMIT_ATTR, WireMock.equalTo(String.valueOf(MAX_OF_POSSIBLE_LOCATIONS)))
-            .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(STATUS_503)
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(ERROR_503_RESPONSE)));
+    @Bean
+    @Primary
+    public RateLimiterRegistry rateLimiterRegistry() {
 
-    Assertions.assertThrows(WeatherServerException.class,
-        () -> openWeatherService.getLocationsByName(LONDON_NAME));
+      RateLimiterConfig rateLimiterConfig = RateLimiterConfig.custom()
+          .limitForPeriod(2)
+          .limitRefreshPeriod(Duration.ofSeconds(10))
+          .timeoutDuration(Duration.ZERO)
+          .build();
 
-    wireMockExtension.verify(
-        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_LOCATIONS_REQUEST_URI)));
+      return RateLimiterRegistry.of(rateLimiterConfig);
+    }
   }
-
-//  @Test
-//  void getWeatherByCoords_whenRateLimitExceeded_usesFallback_andDoesNotCallExternalApi() {
-//    wireMockExtension.stubFor(WireMock.get(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI))
-//        .withQueryParam(LATITUDE_PARAM, WireMock.equalTo(LONDON_LATITUDE))
-//        .withQueryParam(LONGITUDE_PARAM, WireMock.equalTo(LONDON_LONGITUDE))
-//        .withQueryParam(API_KEY_PARAM, WireMock.equalTo(TEST_API_KEY))
-//        .withQueryParam(UNITS_PARAM, WireMock.equalTo(METRIC_SYSTEM))
-//        .willReturn(WireMock.okJson(LONDON_JSON_RESPONSE)));
-//
-//    BigDecimal lat = new BigDecimal(LONDON_LATITUDE);
-//    BigDecimal lon = new BigDecimal(LONDON_LONGITUDE);
-//
-//    openWeatherService.getWeatherByCoords(lat, lon);
-//    openWeatherService.getWeatherByCoords(lat, lon);
-//
-//    Assertions.assertThrows(
-//        WeatherServerException.class,
-//        () -> openWeatherService.getWeatherByCoords(lat, lon)
-//    );
-//
-//    wireMockExtension.verify(2,
-//        WireMock.getRequestedFor(WireMock.urlPathEqualTo(FIND_WEATHER_REQUEST_URI)));
-//  }
 
   @Configuration
   static class WireMockTestConfig {
